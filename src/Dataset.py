@@ -50,16 +50,16 @@ class TaskSpecificARCDataset(Dataset):
                 data = json.load(f)
             inputs = [i["input"] for i in data[self.method]]
             outputs = [i["output"] for i in data[self.method]]
-            inputs = inputs[3 * internal_index:3 * internal_index + 3]
-            outputs = outputs[3 * internal_index:3 * internal_index + 3]
+            inputs = TaskSpecificARCDataset.pad_nd(inputs[3 * internal_index:3 * internal_index + 3])
+            outputs = TaskSpecificARCDataset.pad_nd(outputs[3 * internal_index:3 * internal_index + 3])
         else:
             file_index, internal_index =index, 0
             with open(self.files[file_index], 'r') as f:
                 data = json.load(f)
             inputs = [i["input"] for i in data[self.method]]
             outputs = [i["output"] for i in data[self.method]]
-            inputs = inputs[3 * internal_index:3 * internal_index + 3]
-            outputs = outputs[3 * internal_index:3 * internal_index + 3]
+            inputs = TaskSpecificARCDataset.pad_nd(inputs[3 * internal_index:3 * internal_index + 3])
+            outputs = TaskSpecificARCDataset.pad_nd(outputs[3 * internal_index:3 * internal_index + 3])
         pad = TaskSpecificARCDataset.WordMap["pad_symbol"]
         input_data = [
             inputs[0], torch.ones_like(inputs[0]) * pad, outputs[0],
