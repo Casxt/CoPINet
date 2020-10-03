@@ -70,12 +70,12 @@ class TaskSpecificARCDataset(Dataset):
                 [40, 40], pad_value=pad)
 
         input_data = torch.cat([
-            inputs[0], torch.ones_like(inputs[0]) * pad, outputs[0],
-            inputs[1], torch.ones_like(inputs[1]) * pad, outputs[1],
-            inputs[2], torch.ones_like(inputs[2]) * pad,
-            inputs[2], inputs[2], inputs[2], inputs[2], inputs[2], inputs[2], inputs[2], inputs[2],
+            inputs[0:1], torch.ones_like(inputs[0:1]) * pad, outputs[0:1],
+            inputs[1:2], torch.ones_like(inputs[1:2]) * pad, outputs[1:2],
+            inputs[2:3], torch.ones_like(inputs[2:3]) * pad,
+            inputs[2:3], inputs[2:3], inputs[2:3], inputs[2:3], inputs[2:3], inputs[2:3], inputs[2:3], inputs[2:3],
         ], dim=0)
-        target_data = outputs[2]
+        target_data = outputs[2:3]
         task = torch.ones_like(input_data) * self.index
         task[input_data == pad] = pad
         return input_data, target_data, task
