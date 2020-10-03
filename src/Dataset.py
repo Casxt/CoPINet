@@ -43,24 +43,32 @@ class TaskSpecificARCDataset(Dataset):
         每个文件都包含n对训练用的input，target和m对测试用的input，target
         出于简单起见现在只取train或test的第一对
         """
-
+        pad = TaskSpecificARCDataset.WordMap["pad_symbol"]
         if self.method == 'train':
             file_index, internal_index = index // 2, index % 2
             with open(self.files[file_index], 'r') as f:
                 data = json.load(f)
             inputs = [i["input"] for i in data[self.method]]
             outputs = [i["output"] for i in data[self.method]]
-            inputs = TaskSpecificARCDataset.pad_nd(inputs[3 * internal_index:3 * internal_index + 3])
-            outputs = TaskSpecificARCDataset.pad_nd(outputs[3 * internal_index:3 * internal_index + 3])
+            inputs = TaskSpecificARCDataset.pad_to(
+                [torch.tensor(d) for d in inputs[3 * internal_index:3 * internal_index + 3]],
+                [40, 40], pad_value=pad)
+            outputs = TaskSpecificARCDataset.pad_to(
+                [torch.tensor(d) for d in outputs[3 * internal_index:3 * internal_index + 3]],
+                [40, 40], pad_value=pad)
         else:
-            file_index, internal_index =index, 0
+            file_index, internal_index = index, 0
             with open(self.files[file_index], 'r') as f:
                 data = json.load(f)
             inputs = [i["input"] for i in data[self.method]]
             outputs = [i["output"] for i in data[self.method]]
-            inputs = TaskSpecificARCDataset.pad_nd(inputs[3 * internal_index:3 * internal_index + 3])
-            outputs = TaskSpecificARCDataset.pad_nd(outputs[3 * internal_index:3 * internal_index + 3])
-        pad = TaskSpecificARCDataset.WordMap["pad_symbol"]
+            inputs = TaskSpecificARCDataset.pad_to(
+                [torch.tensor(d) for d in inputs[3 * internal_index:3 * internal_index + 3]],
+                [40, 40], pad_value=pad)
+            outputs = TaskSpecificARCDataset.pad_to(
+                [torch.tensor(d) for d in outputs[3 * internal_index:3 * internal_index + 3]],
+                [40, 40], pad_value=pad)
+
         input_data = [
             inputs[0], torch.ones_like(inputs[0]) * pad, outputs[0],
             inputs[1], torch.ones_like(inputs[1]) * pad, outputs[1],
@@ -69,9 +77,8 @@ class TaskSpecificARCDataset(Dataset):
         ]
         target_data = outputs[2]
         task = torch.ones_like(input_data) * self.index
-        return TaskSpecificARCDataset.pad_to(input_data, [40, 40], pad_value=pad), \
-               TaskSpecificARCDataset.pad_to(target_data, [40, 40], pad_value=pad), \
-               TaskSpecificARCDataset.pad_to(task, [40, 40], pad_value=pad)
+        task[input_data == pad] = pad
+        return torch.cat(input_data, dim=0), target_data, task
 
     @staticmethod
     def pad_to(batch, shape, pad_value=0):
