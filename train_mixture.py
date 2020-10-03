@@ -18,7 +18,7 @@ device = 0
 epochs = 200
 batchSize = 8
 
-workernum = 6
+workernum = 4
 # torch.autograd.set_detect_anomaly(True)
 subPath = Path("copinet/mixture/1st_train")
 save = Path("/root/abstract-reasoning-model/weight", subPath)
@@ -41,7 +41,7 @@ dataset_paths = [
     (5, Path("/root/abstract-reasoning-model/pretrain_dataset/similarity-same-shape/")),
     (6, Path("/root/abstract-reasoning-model/pretrain_dataset/symmetry-complete-rest/"))
 ]
-ecnnet = CoPINet(num_attr=len(ARCDataset.WordMap), num_rule=5, channel_out=len(ARCDataset.WordMap))
+ecnnet = CoPINet(num_attr=len(TaskSpecificARCDataset.WordMap), num_rule=5, channel_out=len(TaskSpecificARCDataset.WordMap))
 
 ecnnet.load_state_dict(torch.load(
     "/root/abstract-reasoning-model/weight/pretrain-encoder-attention/mixture/1st_pretrain/epoch58-acc0.981920063495636.weight",
@@ -86,7 +86,7 @@ for epoch in range(epochs):
         datasets.append(TaskSpecificARCDataset(index=i, dataset_path=Path(dataset_path), method='train'))
     dataset = MixtureDataset(datasets)
     train = DataLoader(dataset, shuffle=True, num_workers=workernum, batch_size=batchSize,
-                       collate_fn=ARCDataset.collate_fn)
+                       collate_fn=TaskSpecificARCDataset.collate_fn)
     for index, batch in enumerate(train):
         if index > 3500:  # 提前退出快速进行val
             break
@@ -100,16 +100,16 @@ for epoch in range(epochs):
         # inputs = random_mask(targets, ARCDataset.WordMap["start_symbol"], ARCDataset.WordMap['pad_symbol'])
 
         answers = targets.ne(inp).to(torch.long)
-        answers[inputs_mask.eq(False)] = ARCDataset.WordMap['pad_symbol']
+        answers[inputs_mask[:, 6:7].eq(False)] = TaskSpecificARCDataset.WordMap['pad_symbol']
 
         outputs = train_forward(net, inp, inputs_mask, task, task_mask)
-        loss = compute_balance_loss(outputs, targets, answers, ARCDataset.WordMap['pad_symbol'])
+        loss = compute_balance_loss(outputs, targets, answers, TaskSpecificARCDataset.WordMap['pad_symbol'])
         _, output_index = torch.max(outputs, dim=-1)
         output_index = output_index.to(outputs.dtype)
 
-        element_accuracy = compute_element_accuracy(output_index, targets, ARCDataset.WordMap['pad_symbol'])
-        mask_accuracy = compute_mask_accuracy(inp, output_index, targets, ARCDataset.WordMap['pad_symbol'])
-        correct_accuracy = compute_corrects_accuracy(output_index, targets, ARCDataset.WordMap['pad_symbol'])
+        element_accuracy = compute_element_accuracy(output_index, targets, TaskSpecificARCDataset.WordMap['pad_symbol'])
+        mask_accuracy = compute_mask_accuracy(inp, output_index, targets, TaskSpecificARCDataset.WordMap['pad_symbol'])
+        correct_accuracy = compute_corrects_accuracy(output_index, targets, TaskSpecificARCDataset.WordMap['pad_symbol'])
         loss.backward()
         optimizer.step()
         optimizer.zero_grad()
@@ -127,7 +127,7 @@ for epoch in range(epochs):
             dataset = TaskSpecificARCDataset(index=i, dataset_path=Path(dataset_path),
                                              method='test')  # ARCDataset(Path(dataset_path), method='test')
             val = DataLoader(dataset, shuffle=False, pin_memory=False, num_workers=workernum,
-                             batch_size=batchSize, collate_fn=ARCDataset.collate_fn)
+                             batch_size=batchSize, collate_fn=TaskSpecificARCDataset.collate_fn)
 
             start_time = used_time = time.time()
             total_element_accuracy = torch.tensor(0.)
@@ -148,9 +148,9 @@ for epoch in range(epochs):
 
                 output_index = val_forward(net, inputs, inputs_mask, task, task_mask)
                 inp = inputs[:, 6:7]
-                element_accuracy = compute_element_accuracy(output_index, targets, ARCDataset.WordMap['pad_symbol'])
-                mask_accuracy = compute_mask_accuracy(inp, output_index, targets, ARCDataset.WordMap['pad_symbol'])
-                correct_accuracy = compute_corrects_accuracy(output_index, targets, ARCDataset.WordMap['pad_symbol'])
+                element_accuracy = compute_element_accuracy(output_index, targets, TaskSpecificARCDataset.WordMap['pad_symbol'])
+                mask_accuracy = compute_mask_accuracy(inp, output_index, targets, TaskSpecificARCDataset.WordMap['pad_symbol'])
+                correct_accuracy = compute_corrects_accuracy(output_index, targets, TaskSpecificARCDataset.WordMap['pad_symbol'])
                 total_element_accuracy = total_element_accuracy + element_accuracy
                 total_correct_accuracy = total_correct_accuracy + correct_accuracy
                 total_mask_accuracy = total_mask_accuracy + mask_accuracy
