@@ -45,7 +45,7 @@ class TaskSpecificARCDataset(Dataset):
         """
 
         if self.method == 'train':
-            file_index, internal_index = index / 2, index % 2
+            file_index, internal_index = index // 2, index % 2
             with open(self.files[file_index], 'r') as f:
                 data = json.load(f)
             inputs = [i["input"] for i in data[self.method]]
