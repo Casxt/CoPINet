@@ -100,6 +100,7 @@ for epoch in range(epochs):
         # inputs = random_mask(targets, ARCDataset.WordMap["start_symbol"], ARCDataset.WordMap['pad_symbol'])
 
         answers = targets.ne(inp).to(torch.long)
+        print(inputs.shape, inputs_mask.shape)
         answers[inputs_mask[:, 6:7].eq(False)] = TaskSpecificARCDataset.WordMap['pad_symbol']
 
         outputs = train_forward(net, inp, inputs_mask, task, task_mask)
