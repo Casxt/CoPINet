@@ -105,7 +105,7 @@ for epoch in range(epochs):
         print(inputs.shape, inputs_mask.shape)
         answers[inputs_mask[:, 6:7].eq(False)] = TaskSpecificARCDataset.WordMap['pad_symbol']
 
-        outputs = train_forward(net, inp, inputs_mask, task, task_mask)
+        outputs = train_forward(net, inputs, inputs_mask, task, task_mask)
         loss = compute_balance_loss(outputs, targets, answers, TaskSpecificARCDataset.WordMap['pad_symbol'])
         _, output_index = torch.max(outputs, dim=-1)
         output_index = output_index.to(outputs.dtype)
