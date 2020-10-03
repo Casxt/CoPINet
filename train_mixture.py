@@ -56,15 +56,13 @@ scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.85, last_epoch
 
 
 def train_forward(net: CoPINet, inputs, inputs_mask, task, task_mask):
-    inputs = torch.nn.functional.interpolate(inputs.view(-1, 16, 40, 40), scale_factor=2, mode='nearest',
-                                    align_corners=None)
+    inputs = torch.nn.functional.interpolate(inputs.view(batchSize, 16, 40, 40), scale_factor=2, mode='nearest')
     output = net(inputs)
     return output
 
 
 def val_forward(net: CoPINet, inputs, inputs_mask, task, task_mask):
-    inputs = torch.nn.functional.interpolate(inputs.view(-1, 16, 40, 40), scale_factor=2, mode='nearest',
-                                    align_corners=None)
+    inputs = torch.nn.functional.interpolate(inputs.view(batchSize, 16, 40, 40), scale_factor=2, mode='nearest')
     output = net(inputs)
     _, res = torch.max(output, dim=-1)
     return res
