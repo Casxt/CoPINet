@@ -43,17 +43,19 @@ class TaskSpecificARCDataset(Dataset):
         每个文件都包含n对训练用的input，target和m对测试用的input，target
         出于简单起见现在只取train或test的第一对
         """
-        file_index = index
-        with open(self.files[file_index], 'r') as f:
-            data = json.load(f)
+
         if self.method == 'train':
-            internal_index = index % 2
+            file_index, internal_index = index / 2, index % 2
+            with open(self.files[file_index], 'r') as f:
+                data = json.load(f)
             inputs = [i["input"] for i in data[self.method]]
             outputs = [i["output"] for i in data[self.method]]
             inputs = inputs[3 * internal_index:3 * internal_index + 3]
             outputs = outputs[3 * internal_index:3 * internal_index + 3]
         else:
-            internal_index = 0
+            file_index, internal_index =index, 0
+            with open(self.files[file_index], 'r') as f:
+                data = json.load(f)
             inputs = [i["input"] for i in data[self.method]]
             outputs = [i["output"] for i in data[self.method]]
             inputs = inputs[3 * internal_index:3 * internal_index + 3]
