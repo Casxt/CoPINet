@@ -62,15 +62,15 @@ class CoPINet(nn.Module):
             nn.BatchNorm2d(256)
         ))
 
-        self.res3 = ResBlock(128, 256, stride=1, downsample=nn.Sequential(
-                conv1x1(128, 256, stride=1),
-                nn.BatchNorm2d(256)
+        self.res3 = ResBlock(1024, 2048, stride=1, downsample=nn.Sequential(
+                conv1x1(1024, 2048, stride=1),
+                nn.BatchNorm2d(2048)
             ))
 
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
 
-        self.mlp = MLP(in_dim=256, out_dim=channel_out, dropout=dropout)
+        self.mlp = MLP(in_dim=2048, out_dim=channel_out, dropout=dropout)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -161,10 +161,9 @@ class CoPINet(nn.Module):
         res2_contrast = self.res2_contrast_bn(
             self.res2_contrast(torch.cat((torch.sum(res2_in, dim=1), contrast2_bias), dim=1)))
         res2_in = res2_in - res2_contrast.unsqueeze(1)
-        print("res2_in", res2_in.shape)
-        res3_in = torch.nn.functional.interpolate(res2_in.view(-1, 128, 10, 10), scale_factor=4, mode='nearest',
+        res3_in = torch.nn.functional.interpolate(res2_in.view(-1, 8 * 128, 10, 10), scale_factor=4, mode='nearest',
                                                   align_corners=None)
-        res3_out = self.res3(res3_in.view(-1, 128, 40, 40))
+        res3_out = self.res3(res3_in.view(-1, 8 * 128, 40, 40))
         final = res3_out.permute([0, 2, 3, 1]).contiguous()
         final = self.mlp(final)
         return final.view(-1, 40, 40, self.channel_out)
