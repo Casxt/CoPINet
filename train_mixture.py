@@ -1,7 +1,7 @@
 import sys
 from os import path
 
-sys.path.append(path.join(path.dirname(__file__), '..', ".."))
+# sys.path.append(path.join(path.dirname(__file__), '..', ".."))
 # sys.path.append("/root/abstract-reasoning-model")
 
 import time
@@ -9,10 +9,10 @@ from pathlib import Path
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-from dataset import ARCDataset, TaskSpecificARCDataset, MixtureDataset
+# from dataset import ARCDataset, TaskSpecificARCDataset, MixtureDataset
 from src import TaskSpecificARCDataset, MixtureDataset, CoPINet, to_device, compute_mask_accuracy, \
     compute_element_accuracy, compute_corrects_accuracy, compute_balance_loss, loging
-from script.PretrainAbstarctAttention.tools import *
+# from script.PretrainAbstarctAttention.tools import *
 
 device = 0
 epochs = 200
