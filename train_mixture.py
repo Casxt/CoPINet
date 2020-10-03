@@ -16,9 +16,9 @@ from src import TaskSpecificARCDataset, MixtureDataset, CoPINet, to_device, comp
 
 device = 0
 epochs = 200
-batchSize = 8
+batchSize = 32
 
-workernum = 4
+workernum = 6
 # torch.autograd.set_detect_anomaly(True)
 subPath = Path("copinet/mixture/1st_train")
 save = Path("/root/abstract-reasoning-model/weight", subPath)
@@ -107,7 +107,7 @@ for epoch in range(epochs):
 
         outputs = train_forward(net, inputs, inputs_mask, task, task_mask)
 
-        print(inputs.shape, outputs.shape, targets.shape, answers.shape)
+        # print(inputs.shape, outputs.shape, targets.shape, answers.shape)
         loss = compute_balance_loss(outputs, targets, answers, TaskSpecificARCDataset.WordMap['pad_symbol'])
         _, output_index = torch.max(outputs, dim=-1)
         output_index = output_index.to(outputs.dtype)
