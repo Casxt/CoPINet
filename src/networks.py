@@ -161,7 +161,7 @@ class CoPINet(nn.Module):
         res2_contrast = self.res2_contrast_bn(
             self.res2_contrast(torch.cat((torch.sum(res2_in, dim=1), contrast2_bias), dim=1)))
         res2_in = res2_in - res2_contrast.unsqueeze(1)
-
+        print("res2_in", res2_in.shape)
         res3_in = torch.nn.functional.interpolate(res2_in.view(-1, 128, 10, 10), scale_factor=4, mode='nearest',
                                                   align_corners=None)
         res3_out = self.res3(res3_in.view(-1, 128, 40, 40))
