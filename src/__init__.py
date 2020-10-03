@@ -1,3 +1,4 @@
 from .networks import CoPINet
 from .MixtureDataset import MixtureDataset
-from .TaskSpecificARCDataset import TaskSpecificARCDataset
+from .Dataset import TaskSpecificARCDataset
+from .tools import *

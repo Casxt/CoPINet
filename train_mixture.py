@@ -10,10 +10,10 @@ import torch
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from dataset import ARCDataset, TaskSpecificARCDataset, MixtureDataset
-from src import TaskSpecificARCDataset, MixtureDataset, CoPINet
+from src import TaskSpecificARCDataset, MixtureDataset, CoPINet, to_device, compute_mask_accuracy, \
+    compute_element_accuracy, compute_corrects_accuracy, compute_balance_loss, loging
 from script.PretrainAbstarctAttention.tools import *
 
-# TODO: 为Embadding设置padding_index参数
 device = 0
 epochs = 200
 batchSize = 32
