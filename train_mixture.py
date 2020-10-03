@@ -48,7 +48,7 @@ ecnnet.load_state_dict(torch.load(
 
 net = torch.nn.DataParallel(ecnnet, device_ids=[0, 1, 2, 3]).cuda(device)
 
-optimizer = torch.optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999), )
+optimizer = torch.optim.Adam(net.parameters(), lr=1e-3, betas=(0.9, 0.999), )
 
 # 0.65^25 = 0.00002
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.85, last_epoch=-1)
