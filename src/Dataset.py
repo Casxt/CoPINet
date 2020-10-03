@@ -69,16 +69,16 @@ class TaskSpecificARCDataset(Dataset):
                 [torch.tensor(d) for d in outputs[3 * internal_index:3 * internal_index + 3]],
                 [40, 40], pad_value=pad)
 
-        input_data = [
+        input_data = torch.cat([
             inputs[0], torch.ones_like(inputs[0]) * pad, outputs[0],
             inputs[1], torch.ones_like(inputs[1]) * pad, outputs[1],
             inputs[2], torch.ones_like(inputs[2]) * pad,
             inputs[2], inputs[2], inputs[2], inputs[2], inputs[2], inputs[2], inputs[2], inputs[2],
-        ]
+        ], dim=0)
         target_data = outputs[2]
         task = torch.ones_like(input_data) * self.index
         task[input_data == pad] = pad
-        return torch.cat(input_data, dim=0), target_data, task
+        return input_data, target_data, task
 
     @staticmethod
     def pad_to(batch, shape, pad_value=0):
