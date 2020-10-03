@@ -164,7 +164,7 @@ class CoPINet(nn.Module):
 
         res3_in = torch.nn.functional.interpolate(res2_in.view(-1, 128, 10, 10), scale_factor=4, mode='nearest',
                                                   align_corners=None)
-        res3_out = slef.res3(res3_in.view(-1, 256, 40, 40))
+        res3_out = self.res3(res3_in.view(-1, 256, 40, 40))
         final = res3_out.permute([0, 2, 3, 1]).contiguous()
         final = self.mlp(final)
         return final.view(-1, 40, 40, self.channel_out)
