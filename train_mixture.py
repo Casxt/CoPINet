@@ -16,7 +16,8 @@ from src import TaskSpecificARCDataset, MixtureDataset, CoPINet, to_device, comp
 
 device = 0
 epochs = 200
-batchSize = 32
+batchSize = 8
+
 workernum = 6
 # torch.autograd.set_detect_anomaly(True)
 subPath = Path("copinet/mixture/1st_train")

@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.models as models
 
-from blocks import *
+from .blocks import *
 
 
 class CoPINet(nn.Module):
