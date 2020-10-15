@@ -15,7 +15,7 @@ from src import TaskSpecificARCDataset, MixtureDataset, CoPINet, to_device, comp
 
 # from script.PretrainAbstarctAttention.tools import *
 
-device = 4
+device = 0
 epochs = 200
 batchSize = 32
 

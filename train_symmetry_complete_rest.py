@@ -15,11 +15,11 @@ from src import TaskSpecificARCDataset, MixtureDataset, CoPINet, to_device, comp
 
 # from script.PretrainAbstarctAttention.tools import *
 
-device = 4
+device = 2
 epochs = 200
 batchSize = 32
 
-workernum = 2
+workernum = 4
 # torch.autograd.set_detect_anomaly(True)
 subPath = Path("copinet/region-fix-object/1st_train")
 save = Path("/home/zhangkai/abstract-reasoning/weight", subPath)
