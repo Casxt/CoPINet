@@ -20,7 +20,7 @@ batchSize = 32
 
 workernum = 6
 # torch.autograd.set_detect_anomaly(True)
-subPath = Path("copinet/mixture/1st_train")
+subPath = Path("copinet/mixture/3th_7task")
 save = Path("/root/abstract-reasoning-model/weight", subPath)
 save.mkdir(parents=True) if not save.exists() else None
 
@@ -35,11 +35,18 @@ writer = SummaryWriter(Path("/root/abstract-reasoning-model/log", subPath))
 # 7. symmetry-fixbroken
 
 dataset_paths = [
-    (1, Path("/root/abstract-reasoning-model/pretrain_dataset/closure-fill-color/")),
-    (2, Path("/root/abstract-reasoning-model/pretrain_dataset/continue-link-point/")),
-    (4, Path("/root/abstract-reasoning-model/pretrain_dataset/region-fix-object/")),
-    (5, Path("/root/abstract-reasoning-model/pretrain_dataset/similarity-same-shape/")),
-    (6, Path("/root/abstract-reasoning-model/pretrain_dataset/symmetry-complete-rest/"))
+#     (1, Path("/root/abstract-reasoning-model/pretrain_dataset/closure-fill-color/")),
+#     (2, Path("/root/abstract-reasoning-model/pretrain_dataset/continue-link-point/")),
+#     (4, Path("/root/abstract-reasoning-model/pretrain_dataset/region-fix-object/")),
+#     (5, Path("/root/abstract-reasoning-model/pretrain_dataset/similarity-same-shape/")),
+#     (6, Path("/root/abstract-reasoning-model/pretrain_dataset/symmetry-complete-rest/"))
+    (1, Path("/root/abstract-reasoning-model/training/closure-fill-color/")),
+    (2, Path("/root/abstract-reasoning-model/training/continue-link-point/")),
+    (3, Path("/root/abstract-reasoning-model/training/proximity-nearest-color/")),
+    (4, Path("/root/abstract-reasoning-model/training/region-fix-object/")),
+    (5, Path("/root/abstract-reasoning-model/training/similarity-same-shape/")),
+    (6, Path("/root/abstract-reasoning-model/training/symmetry-complete-rest/")),
+    (7, Path("/root/abstract-reasoning-model/training/symmetry-fixbroken/"))
 ]
 ecnnet = CoPINet(num_attr=len(TaskSpecificARCDataset.WordMap), num_rule=5, channel_out=len(TaskSpecificARCDataset.WordMap))
 
@@ -47,7 +54,7 @@ ecnnet.load_state_dict(torch.load(
     "/root/abstract-reasoning-model/weight/pretrain-encoder-attention/mixture/1st_pretrain/epoch58-acc0.981920063495636.weight",
     map_location=torch.device('cpu')), strict=False)
 
-net = torch.nn.DataParallel(ecnnet, device_ids=[0, 1, 2, 3]).cuda(device)
+net = torch.nn.DataParallel(ecnnet, device_ids=[0, 1]).cuda(device)
 
 optimizer = torch.optim.Adam(net.parameters(), lr=1e-3, betas=(0.9, 0.999), )
 

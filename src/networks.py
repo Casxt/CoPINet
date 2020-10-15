@@ -165,8 +165,9 @@ class CoPINet(nn.Module):
                                                   align_corners=None)
         res3_out = self.res3(res3_in.view(-1, 8 * 128, 40, 40))
         final = res3_out.permute([0, 2, 3, 1]).contiguous()
-        final = self.mlp(final)
-        return final.view(-1, 40, 40, self.channel_out)
+        final = self.mlp(final).view(-1, 40, 40, self.channel_out)
+        final = torch.nn.functional.log_softmax(final, dim=-1)
+        return final
 
         # out = self.res2(res2_in.view(-1, 128, 10, 10))
         #
