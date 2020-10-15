@@ -12,6 +12,7 @@ from torch.utils.tensorboard import SummaryWriter
 # from dataset import ARCDataset, TaskSpecificARCDataset, MixtureDataset
 from src import TaskSpecificARCDataset, MixtureDataset, CoPINet, to_device, compute_mask_accuracy, \
     compute_element_accuracy, compute_corrects_accuracy, compute_balance_loss, loging
+
 # from script.PretrainAbstarctAttention.tools import *
 
 device = 0
@@ -20,7 +21,7 @@ batchSize = 32
 
 workernum = 6
 # torch.autograd.set_detect_anomaly(True)
-subPath = Path("copinet/mixture/3th_7task")
+subPath = Path("copinet/closure-fill-color/1st_train")
 save = Path("/home/zhangkai/abstract-reasoning/weight", subPath)
 save.mkdir(parents=True) if not save.exists() else None
 
@@ -35,26 +36,16 @@ writer = SummaryWriter(Path("/home/zhangkai/abstract-reasoning/log", subPath))
 # 7. symmetry-fixbroken
 
 dataset_paths = [
-#     (1, Path("/home/zhangkai/abstract-reasoning/pretrain_dataset/closure-fill-color/")),
-#     (2, Path("/home/zhangkai/abstract-reasoning/pretrain_dataset/continue-link-point/")),
-#     (4, Path("/home/zhangkai/abstract-reasoning/pretrain_dataset/region-fix-object/")),
-#     (5, Path("/home/zhangkai/abstract-reasoning/pretrain_dataset/similarity-same-shape/")),
-#     (6, Path("/home/zhangkai/abstract-reasoning/pretrain_dataset/symmetry-complete-rest/"))
-    (1, Path("/home/zhangkai/abstract-reasoning/training/closure-fill-color/")),
-    (2, Path("/home/zhangkai/abstract-reasoning/training/continue-link-point/")),
-    (3, Path("/home/zhangkai/abstract-reasoning/training/proximity-nearest-color/")),
-    (4, Path("/home/zhangkai/abstract-reasoning/training/region-fix-object/")),
-    (5, Path("/home/zhangkai/abstract-reasoning/training/similarity-same-shape/")),
-    (6, Path("/home/zhangkai/abstract-reasoning/training/symmetry-complete-rest/")),
-    (7, Path("/home/zhangkai/abstract-reasoning/training/symmetry-fixbroken/"))
+    (1, Path("/home/zhangkai/abstract-reasoning/training-large/closure-fill-color/")),
 ]
-ecnnet = CoPINet(num_attr=len(TaskSpecificARCDataset.WordMap), num_rule=7, channel_out=len(TaskSpecificARCDataset.WordMap))
+ecnnet = CoPINet(num_attr=len(TaskSpecificARCDataset.WordMap), num_rule=7,
+                 channel_out=len(TaskSpecificARCDataset.WordMap))
 
 # ecnnet.load_state_dict(torch.load(
 #     "/home/zhangkai/abstract-reasoning/weight/pretrain-encoder-attention/mixture/1st_pretrain/epoch58-acc0.981920063495636.weight",
 #     map_location=torch.device('cpu')), strict=False)
 
-net = torch.nn.DataParallel(ecnnet, device_ids=[0, 1]).cuda(device)
+net = torch.nn.DataParallel(ecnnet, device_ids=[device, device + 1]).cuda(device)
 
 optimizer = torch.optim.Adam(net.parameters(), lr=1e-3, betas=(0.9, 0.999), )
 
@@ -63,13 +54,15 @@ scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.85, last_epoch
 
 
 def train_forward(net: CoPINet, inputs, inputs_mask, task, task_mask):
-    inputs = torch.nn.functional.interpolate(inputs.view(batchSize, 16, 40, 40).to(torch.float), scale_factor=2, mode='nearest')
+    inputs = torch.nn.functional.interpolate(inputs.view(batchSize, 16, 40, 40).to(torch.float), scale_factor=2,
+                                             mode='nearest')
     output = net(inputs)
     return output
 
 
 def val_forward(net: CoPINet, inputs, inputs_mask, task, task_mask):
-    inputs = torch.nn.functional.interpolate(inputs.view(batchSize, 16, 40, 40).to(torch.float), scale_factor=2, mode='nearest')
+    inputs = torch.nn.functional.interpolate(inputs.view(batchSize, 16, 40, 40).to(torch.float), scale_factor=2,
+                                             mode='nearest')
     output = net(inputs)
     _, res = torch.max(output, dim=-1)
     return res
@@ -121,7 +114,8 @@ for epoch in range(epochs):
 
         element_accuracy = compute_element_accuracy(output_index, targets, TaskSpecificARCDataset.WordMap['pad_symbol'])
         mask_accuracy = compute_mask_accuracy(inp, output_index, targets, TaskSpecificARCDataset.WordMap['pad_symbol'])
-        correct_accuracy = compute_corrects_accuracy(output_index, targets, TaskSpecificARCDataset.WordMap['pad_symbol'])
+        correct_accuracy = compute_corrects_accuracy(output_index, targets,
+                                                     TaskSpecificARCDataset.WordMap['pad_symbol'])
         loss.backward()
         optimizer.step()
         optimizer.zero_grad()
@@ -160,9 +154,12 @@ for epoch in range(epochs):
 
                 output_index = val_forward(net, inputs, inputs_mask, task, task_mask)
                 inp = inputs[:, 6:7]
-                element_accuracy = compute_element_accuracy(output_index, targets, TaskSpecificARCDataset.WordMap['pad_symbol'])
-                mask_accuracy = compute_mask_accuracy(inp, output_index, targets, TaskSpecificARCDataset.WordMap['pad_symbol'])
-                correct_accuracy = compute_corrects_accuracy(output_index, targets, TaskSpecificARCDataset.WordMap['pad_symbol'])
+                element_accuracy = compute_element_accuracy(output_index, targets,
+                                                            TaskSpecificARCDataset.WordMap['pad_symbol'])
+                mask_accuracy = compute_mask_accuracy(inp, output_index, targets,
+                                                      TaskSpecificARCDataset.WordMap['pad_symbol'])
+                correct_accuracy = compute_corrects_accuracy(output_index, targets,
+                                                             TaskSpecificARCDataset.WordMap['pad_symbol'])
                 total_element_accuracy = total_element_accuracy + element_accuracy
                 total_correct_accuracy = total_correct_accuracy + correct_accuracy
                 total_mask_accuracy = total_mask_accuracy + mask_accuracy
