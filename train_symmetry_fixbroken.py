@@ -21,7 +21,7 @@ batchSize = 32
 
 workernum = 4
 # torch.autograd.set_detect_anomaly(True)
-subPath = Path("copinet/region-fix-object/1st_train")
+subPath = Path("copinet/symmetry-fixbroken/1st_train")
 save = Path("/home/zhangkai/abstract-reasoning/weight", subPath)
 save.mkdir(parents=True) if not save.exists() else None
 
