@@ -62,7 +62,7 @@ padding = ContextARCDataset.WordMap['pad_symbol']
 
 def train_forward(net, inputs, inputs_mask, ctx_x, ctx_x_mask, ctx_y, ctx_y_mask):
     b, h, w = inputs.shape
-    inputs = torch.cat([d.squeeze(1) for d in (ctx_x, ctx_y, inputs)], dim=1)
+    inputs = torch.cat([d.squeeze(1) for d in (ctx_x, ctx_y, inputs, inputs)], dim=1)
     output = net(inputs)
     task = torch.zeros((b, 8), device=inputs.device, dtype=torch.float)
     return output, task
@@ -70,7 +70,7 @@ def train_forward(net, inputs, inputs_mask, ctx_x, ctx_x_mask, ctx_y, ctx_y_mask
 
 def val_forward(net, inputs, inputs_mask, ctx_x, ctx_x_mask, ctx_y, ctx_y_mask):
     b, h, w = inputs.shape
-    inputs = torch.cat([d.squeeze(1) for d in (ctx_x, ctx_y, inputs)], dim=1)
+    inputs = torch.cat([d.squeeze(1) for d in (ctx_x, ctx_y, inputs, inputs)], dim=1)
     output = net(inputs)
     _, res = torch.max(output, dim=-1)
     task = torch.zeros((b), device=inputs.device)
