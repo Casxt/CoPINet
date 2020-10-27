@@ -26,7 +26,7 @@ class SimpleCoPINet(nn.Module):
             nn.Conv2d(1, self.internal_channel, kernel_size=3, stride=1, padding=1, bias=False),
             ResBlock(self.internal_channel, self.internal_channel, stride=1, downsample=nn.Sequential(
                 conv1x1(self.internal_channel, self.internal_channel, stride=1),
-                nn.BatchNorm2d(self.internal_channel * 4)
+                nn.BatchNorm2d(self.internal_channel)
             ))
         )
         self.bn1 = nn.BatchNorm2d(self.internal_channel)
@@ -44,7 +44,7 @@ class SimpleCoPINet(nn.Module):
             nn.Conv2d(1, self.internal_channel, kernel_size=3, stride=1, padding=1, bias=False),
             ResBlock(self.internal_channel, self.internal_channel, stride=1, downsample=nn.Sequential(
                 conv1x1(self.internal_channel, self.internal_channel, stride=1),
-                nn.BatchNorm2d(self.internal_channel * 4)
+                nn.BatchNorm2d(self.internal_channel)
             ))
         )
         self.inf_bn1 = nn.BatchNorm2d(self.internal_channel)
