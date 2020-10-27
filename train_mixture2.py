@@ -50,7 +50,7 @@ ecnnet = SimpleCoPINet(num_attr=len(ContextARCDataset.WordMap), num_rule=7, chan
 #     "/root/abstract-reasoning-model/weight/pretrain-encoder-attention/mixture/1st_pretrain/epoch58-acc0.981920063495636.weight",
 #     map_location=torch.device('cpu')), strict=False)
 
-net = torch.nn.DataParallel(ecnnet, device_ids=[0, 1, 2, 3, 4, 5, 6, 7]).cuda(device)
+net = torch.nn.DataParallel(ecnnet, device_ids=[0, 1]).cuda(device)
 
 optimizer = torch.optim.Adam(net.parameters(), lr=1e-4, betas=(0.9, 0.999), )
 
