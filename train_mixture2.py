@@ -18,8 +18,8 @@ from src import ContextARCDataset, MixtureDataset, SimpleCoPINet, to_device, com
 
 device = 0
 epochs = 200
-batchSize = 8
-workernum = 2
+batchSize = 32
+workernum = 4
 # torch.autograd.set_detect_anomaly(True)
 subPath = Path("copinet/mixture/6th_train")
 save = Path("/home/zhangkai/abstract-reasoning/weight", subPath)
