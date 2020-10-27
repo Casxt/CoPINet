@@ -78,11 +78,11 @@ def val_forward(net, inputs, inputs_mask, ctx_x, ctx_x_mask, ctx_y, ctx_y_mask):
 
 
 def to_same_size(pad_value, *batch):
-    max_shape = [0] * len(batch[0].shape)
-    for item in batch:
-        for i, d in enumerate(item.shape):
-            if max_shape[i] < d:
-                max_shape[i] = d
+    max_shape = [batch[0].shape[0], 40, 40] * len(batch[0].shape)
+    # for item in batch:
+    #     for i, d in enumerate(item.shape):
+    #         if max_shape[i] < d:
+    #             max_shape[i] = d
     padded_tensor = []
     for item in batch:
         batch_dim = []
