@@ -156,7 +156,7 @@ class SimpleCoPINet(nn.Module):
             self.res1_contrast(torch.cat((torch.sum(res1_in, dim=1), contrast1_bias), dim=1)))
         res1_in = res1_in - res1_contrast.unsqueeze(1)
         res2_in = self.res1(res1_in.view(-1, 64, 10, 10))
-        res2_in = res2_in.view(-1, 8, 128, 5, 5)
+        res2_in = res2_in.view(-1, 1, 128, 5, 5)
         res2_contrast = self.res2_contrast_bn(
             self.res2_contrast(torch.cat((torch.sum(res2_in, dim=1), contrast2_bias), dim=1)))
         res2_in = res2_in - res2_contrast.unsqueeze(1)
