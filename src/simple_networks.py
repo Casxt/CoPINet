@@ -159,9 +159,9 @@ class SimpleCoPINet(nn.Module):
         row_features = self.relu(
             self.bn_row(self.conv_row(torch.cat((row1_features, row3_features), dim=0))))
 
-        row1 = row_features[:N, :, :, :].view(N, 1, 1, self.internal_channel, H, W) # .unsqueeze(1).unsqueeze(1)#.expand(N, 1, 1, self.internal_channel, H, W)
+        row1 = row_features[:N//2, :, :, :].view(N, 1, 1, self.internal_channel, H, W) # .unsqueeze(1).unsqueeze(1)#.expand(N, 1, 1, self.internal_channel, H, W)
         # row2 = row_features[N:2 * N, :, :, :].unsqueeze(1).unsqueeze(1).expand(N, 8, 1, 64, 20, 20)
-        row3 = row_features[N:, :, :, :].view(N, 1, 1, self.internal_channel, H, W)# .unsqueeze(2)
+        row3 = row_features[N//2:, :, :, :].view(N, 1, 1, self.internal_channel, H, W)# .unsqueeze(2)
         # print("row_features", row_features.shape)
         # print("row1", row1.shape)
         # print("row3", row3.shape)
