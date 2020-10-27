@@ -146,14 +146,14 @@ class SimpleCoPINet(nn.Module):
         # Perception Branch
         input_features = self.maxpool(self.relu(self.bn1(self.conv1(x.view(-1, H, W).unsqueeze(1)))))
         input_features = input_features.view(-1, 4, self.internal_channel, H, W)
-        print("input_features", input_features.shape)
+
         choices_features = input_features[:, 3:, :, :, :].unsqueeze(2)  # N, 4, 64, 20, 20 -> N, 1, 1, 64, 20, 20
 
         row1_features = torch.sum(input_features[:, 0:2, :, :, :], dim=1)  # N, 64, 20, 20
         # row2_features = torch.sum(input_features[:, 3:6, :, :, :], dim=1)  # N, 64, 20, 20
         row3_pre = input_features[:, 2:3, :, :, :].unsqueeze(
             1)  # .expand(N, 1, 1, 64, 10,10) N, 1, 64, 10, 10 -> N, 1, 2, 64, 10, 10 -> N, 1, 1, 64, 10, 10
-        print("row3_pre", row3_pre.shape)
+
         row3_features = torch.sum(torch.cat((row3_pre, choices_features), dim=2), dim=2).view(-1, self.internal_channel,
                                                                                               H, W)  # N, 1, 1, 64, 10, 10 -> N, 1, 64, 10, 10 -> N * 1, 64, 10, 10
         row_features = self.relu(
@@ -162,6 +162,9 @@ class SimpleCoPINet(nn.Module):
         row1 = row_features[:N, :, :, :].unsqueeze(1).unsqueeze(1)#.expand(N, 1, 1, self.internal_channel, H, W)
         # row2 = row_features[N:2 * N, :, :, :].unsqueeze(1).unsqueeze(1).expand(N, 8, 1, 64, 20, 20)
         row3 = row_features[N:, :, :, :].view(-1, 1, self.internal_channel, H, W).unsqueeze(2)
+        print("row_features", row_features.shape)
+        print("row1", row1.shape)
+        print("row3", row3.shape)
         final_row_features = torch.sum(torch.cat((row1, row3), dim=2), dim=2)
 
         # col1_features = torch.sum(input_features[:, 0:9:3, :, :, :], dim=1)  # N, 64, 20, 20
