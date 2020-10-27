@@ -67,7 +67,7 @@ class SimpleCoPINet(nn.Module):
         #         nn.BatchNorm2d(2048)
         #     ))
         self.res3 = ResBlock(128, 2048, stride=1, downsample=nn.Sequential(
-                conv1x1(1024, 2048, stride=1),
+                conv1x1(128, 2048, stride=1),
                 nn.BatchNorm2d(2048)
             ))
 
